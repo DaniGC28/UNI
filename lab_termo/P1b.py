@@ -3,7 +3,7 @@
 import matplotlib.pyplot as plt
 from matplotlib.ticker import AutoMinorLocator
 
-def graph(x, y, xerr=[], yerr=[], name="prova", xname="eix X", yname="eix Y", title="Gràfica"):
+def graph(x, y, xerr=[], yerr=[], name="prova", xname="eix X", yname="eix Y", title="Gràfica", autoSave=True, line=False):
 
     if len(xerr) == 0:
         xerr = np.zeros(len(x))
@@ -22,12 +22,13 @@ def graph(x, y, xerr=[], yerr=[], name="prova", xname="eix X", yname="eix Y", ti
         markersize = 3.5
     )
 
-    ax.plot(
-        np.sort(x), np.sort(y),
-        linestyle="--",
-        color="red",
-        alpha=0.2
-    )
+    if line:
+        ax.plot(
+            np.sort(x), np.sort(y),
+            linestyle="--",
+            color="red",
+            alpha=0.2
+        )
 
     # Eixos
     ax.set_xlabel(xname)
@@ -53,8 +54,11 @@ def graph(x, y, xerr=[], yerr=[], name="prova", xname="eix X", yname="eix Y", ti
 
     plt.tight_layout()
     # plt.axis("equal")
-    plt.savefig(f"GraficsP1b/{name}.png", dpi=300)
-    plt.show()
+    if autoSave:
+        plt.savefig(f"GraficsP1b/{name}.png", dpi=300)
+    else:
+         return fig, ax
+    
 
 
 def graphReg(x, y, xerr=[], yerr=[], name="prova", xname="eix X", yname="eix Y", title="Gràfica"):
@@ -130,43 +134,29 @@ T = np.array([352.7822972, 437.679356, 526.7069832, 614.3250301, 698.550656, 780
 
 R = [111.9819549, 148.4537313, 186.7, 224.3407129, 260.5240418, 295.7403624, 329.3886792, 361.7377644, 193.3747573, 313.6654088, 415.8666667, 500.4531328, 573.9126437, 637.4978723, 695.0250497, 746.1654528, 792.1515419, 840.642953, 880.324498, 923.2797546, 958.6095941, 992.8124911, 1031.325769, 1065.337566, 1095.205155, 1123.730663, 1158.180583, 1182.582789, 1211.128199, 1240.890141]
 
+Rad = np.array([3.545454545, 6.272727273, 12.04545455, 15.90909091, 20.90909091, 27.27272727, 34.54545455, 43.18181818, 13.40909091, 32.27272727, 65.90909091, 113.1818182, 182.7272727, 262.7272727, 354.5454545, 460.0, 573.6363636, 709.0909091, 829.0909091, 986.3636364, 1122.727273, 1286.363636, 1463.636364, 1636.363636, 1784.090909, 1954.545455, 2163.636364, 2309.090909, 2486.363636, 2706.818182])
+
 inc_R = [0.5754131132, 0.4579595661, 0.4538619486, 0.4728894105, 0.4976148199, 0.5251729513, 0.551592236, 0.5768258384, 0.435731298, 0.5283895118, 0.6034799915, 0.6482740205, 0.677930628, 0.694559611, 0.7059004014, 0.7107390744, 0.7112344817, 0.7178752026, 0.7192593402, 0.7197679518, 0.7188764001, 0.7157721616, 0.7158088765, 0.7152375682, 0.7161385034, 0.7135304008, 0.7129260538, 0.7118661772, 0.7112037377, 0.7088973264]
 
 inc_T = np.array([1.801130691, 3.112799561, 4.890380379, 6.695314141, 8.445199804, 10.15455587, 11.79039073, 13.36451393, 5.198845241, 11.02290661, 15.99731537, 20.11627822, 23.69419311, 26.79109847, 29.59329286, 32.08429333, 34.32420611, 36.68718736, 38.62064948, 40.71373271, 42.43527714, 44.1018295, 45.97884661, 47.63651737, 49.09238392, 50.48261235, 52.16183804, 53.35129068, 54.7427783, 56.19349683])
 
 inc_P = np.array([0.000721576971, 0.0007400809772, 0.00104569793, 0.001343426797, 0.001639521404, 0.001934994487, 0.002231168531, 0.002527904627, 0.001155668335, 0.00213731444, 0.003128440276, 0.004128234893, 0.005131256923, 0.006137128723, 0.007143966186, 0.008152468587, 0.009162300402, 0.01020003032, 0.01114869959, 0.01223904941, 0.01319875043, 0.01421008873, 0.01532095129, 0.01635136075, 0.01724965678, 0.01822074086, 0.01936238721, 0.02021148247, 0.02121185773, 0.02233469639])
 
+inc_Rad = np.array([0.2272727273, 0.2272727273, 0.2272727273, 0.2272727273, 0.2272727273, 0.2272727273, 0.2272727273, 0.2272727273, 0.9090909091, 0.9090909091, 0.9090909091, 0.9090909091, 0.9090909091, 0.9090909091, 2.272727273, 2.272727273, 2.272727273, 2.272727273, 4.545454545, 4.545454545, 4.545454545, 4.545454545, 4.545454545, 4.545454545, 4.545454545, 4.545454545, 4.545454545, 4.545454545, 4.545454545, 4.545454545])
+
 T_ambient = 27.3+273.15
 
-lnP = np.log(P)
+#Q7
 
-lnT = np.log(T-T_ambient)
-
-inc_lnP = inc_P/P
-
-inc_lnT = (inc_T + 0.1)/(T-T_ambient)
+fig, ax = graph(T[11:], Rad[11:], xerr=inc_T[11:], yerr=inc_Rad[11:], xname=r"Temperatura, $T(K)$", yname=r"Radiació emesa, $P(\mu W$)", title="Regressió de la radiació emesa en funció de la temperatura\n(Sense els 12 primers punts)", autoSave=False)
 
 
-graph(lnT, lnP, xerr=inc_lnT, yerr=inc_lnP, name="Q4", xname=r"$\ln(\Delta T)$", yname=r"$\ln(P)$", title=r"$\ln(P)$ en funció de $\ln(\Delta T)$, amb $\Delta T = T-T_a$")
+lnRad = np.log(Rad)
 
-idx = np.argsort(T)
-lnT = lnT[idx]
-lnP = lnP[idx]
+lnT   = np.log(T)
 
-for i in range(len(lnP)-3):
-    coef, cov = np.polyfit(lnT[:-i-1], lnP[:-i-1], 1, cov=True)
 
-    pendent = coef[0]
-    ordenada = coef[1]
-
-    inc_pendent = np.sqrt(cov[0, 0])
-    inc_ordenada = np.sqrt(cov[1, 1])
-
-    # print(f"Agafant desde n={i}:")
-    # print(f"Pendent = {pendent:.3f} ± {inc_pendent:.3f}")
-    # print(f"Ordenada = {ordenada:.3f} ± {inc_ordenada:.3f}\n")
-
-coef, cov = np.polyfit(lnT[:10], lnP[:10], 1, cov=True)
+coef, cov = np.polyfit(lnT[11:], lnRad[11:], 1, cov=True)
 
 pendent = coef[0]
 ordenada = coef[1]
@@ -177,4 +167,55 @@ inc_ordenada = np.sqrt(cov[1, 1])
 print(f"Pendent = {pendent:.3f} ± {inc_pendent:.3f}")
 print(f"Ordenada = {ordenada:.3f} ± {inc_ordenada:.3f}\n")
 
-graphReg(lnT[:10], lnP[:10], xerr=inc_lnT[idx][:10], yerr=inc_lnP[idx][:10], name="Q5", xname=r"$\ln(\Delta T)$", yname=r"$\ln(P)$", title=r"$\ln(P)$ en funció de $\ln(\Delta T)$, regressió lineal (10 primers punts)")
+
+eix_x = np.linspace(int(T[11]-50), int(T[-1]+50), 1000)
+plt.plot(eix_x, eix_x**pendent * np.e**ordenada, color="crimson", linestyle="--", alpha=0.5)
+
+plt.savefig(f"GraficsP1b/Q7b.png", dpi=300)
+
+
+graph(lnT, lnRad, line=True, name="Q8", xname=r"$\ln (T)$", yname=r"$\ln (P)$", title=r"$\ln (P)$ en funció de $\ln(T)$")
+
+# #Q 2-5
+
+# lnP = np.log(P)
+
+# lnT = np.log(T-T_ambient)
+
+# inc_lnP = inc_P/P
+
+# inc_lnT = (inc_T + 0.1)/(T-T_ambient)
+
+
+# graph(lnT, lnP, xerr=inc_lnT, yerr=inc_lnP, name="Q4", xname=r"$\ln(\Delta T)$", yname=r"$\ln(P)$", title=r"$\ln(P)$ en funció de $\ln(\Delta T)$, amb $\Delta T = T-T_a$")
+
+# idx = np.argsort(T)
+# lnT = lnT[idx]
+# lnP = lnP[idx]
+
+# for i in range(len(lnP)-3):
+#     coef, cov = np.polyfit(lnT[:-i-1], lnP[:-i-1], 1, cov=True)
+
+#     pendent = coef[0]
+#     ordenada = coef[1]
+
+#     inc_pendent = np.sqrt(cov[0, 0])
+#     inc_ordenada = np.sqrt(cov[1, 1])
+
+#     # print(f"Agafant desde n={i}:")
+#     # print(f"Pendent = {pendent:.3f} ± {inc_pendent:.3f}")
+#     # print(f"Ordenada = {ordenada:.3f} ± {inc_ordenada:.3f}\n")
+
+# coef, cov = np.polyfit(lnT[:10], lnP[:10], 1, cov=True)
+
+# pendent = coef[0]
+# ordenada = coef[1]
+
+# inc_pendent = np.sqrt(cov[0, 0])
+# inc_ordenada = np.sqrt(cov[1, 1])
+
+# print(f"Pendent = {pendent:.3f} ± {inc_pendent:.3f}")
+# print(f"Ordenada = {ordenada:.3f} ± {inc_ordenada:.3f}\n")
+
+# graphReg(lnT[:10], lnP[:10], xerr=inc_lnT[idx][:10], yerr=inc_lnP[idx][:10], name="Q5", xname=r"$\ln(\Delta T)$", yname=r"$\ln(P)$", title=r"$\ln(P)$ en funció de $\ln(\Delta T)$, regressió lineal (10 primers punts)")
+
