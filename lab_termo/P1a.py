@@ -31,7 +31,7 @@ def graph(x, y, xerr=[], yerr=[], name="prova", xname="eix X", yname="eix Y", ti
     # Eixos
     ax.set_xlabel(xname)
     ax.set_ylabel(yname)
-    ax.set_title(title)
+    # ax.set_title(title)
 
     # Grid principal i secundària
     ax.grid(True, which="major", linestyle="-", alpha=0.3)
@@ -74,7 +74,12 @@ fig, ax = graph(x, T, xerr=inc_x, yerr=inc_T, autoSave=False, xname="Distància 
 
 lnT = np.log(T)
 
-coef, cov = np.polyfit(x, lnT, 1, cov=True)
+#regressió
+
+xf=x
+yf=lnT
+
+coef, cov = np.polyfit(xf, yf, 1, cov=True)
 
 pendent = coef[0]
 ordenada = coef[1]
@@ -82,14 +87,27 @@ ordenada = coef[1]
 inc_pendent = np.sqrt(cov[0, 0])
 inc_ordenada = np.sqrt(cov[1, 1])
 
+y_ajust = pendent * xf + ordenada
+ss_res = np.sum((yf - y_ajust) ** 2)
+ss_tot = np.sum((yf - np.mean(yf)) ** 2)
+r2 = 1 - ss_res / ss_tot
+
+etiqueta = "\n".join([
+    "Ajust:",
+    rf"$m = {pendent:.3f} \pm {inc_pendent:.3f}$",
+    rf"$n = {ordenada:.3f} \pm {inc_ordenada:.3f}$",
+    rf"$R^2 = {r2:.4f}$",
+])
+
 print("____Ferro____")
 print(f"Pendent = {pendent:.5f} ± {inc_pendent:.5f}")
 print(f"Ordenada = {ordenada:.3f} ± {inc_ordenada:.3f}\n")
 
 
-eix_x = np.linspace(x[0]-2, x[-1]+2, 1000)
-plt.plot(eix_x, np.e**(ordenada) * np.e**(pendent*eix_x), linestyle="--", color="crimson", alpha=0.5)
+eix_x = np.linspace(xf[0]-2, xf[-1]+2, 1000)
+plt.plot(eix_x, np.e**(ordenada) * np.e**(pendent*eix_x), linestyle="--", color="crimson", alpha=0.5, label=etiqueta)
 
+plt.legend(loc="best")
 plt.savefig("GraficsP1a/g1.png", dpi=300)
 
 
@@ -107,7 +125,12 @@ fig, ax = graph(x, T, xerr=inc_x, yerr=inc_T, autoSave=False, xname="Distància 
 
 lnT = np.log(T)
 
-coef, cov = np.polyfit(x, lnT, 1, cov=True)
+#regressió
+
+xf=x
+yf=lnT
+
+coef, cov = np.polyfit(xf, yf, 1, cov=True)
 
 pendent = coef[0]
 ordenada = coef[1]
@@ -115,15 +138,27 @@ ordenada = coef[1]
 inc_pendent = np.sqrt(cov[0, 0])
 inc_ordenada = np.sqrt(cov[1, 1])
 
+y_ajust = pendent * xf + ordenada
+ss_res = np.sum((yf - y_ajust) ** 2)
+ss_tot = np.sum((yf - np.mean(yf)) ** 2)
+r2 = 1 - ss_res / ss_tot
+
+etiqueta = "\n".join([
+    "Ajust:",
+    rf"$m = {pendent:.3f} \pm {inc_pendent:.3f}$",
+    rf"$n = {ordenada:.3f} \pm {inc_ordenada:.3f}$",
+    rf"$R^2 = {r2:.4f}$",
+])
+
 print("____Alumini____")
 print(f"Pendent = {pendent:.5f} ± {inc_pendent:.5f}")
 print(f"Ordenada = {ordenada:.3f} ± {inc_ordenada:.3f}\n")
 
 
 eix_x = np.linspace(x[0]-2, x[-1]+2, 1000)
-plt.plot(eix_x, np.e**(ordenada) * np.e**(pendent*eix_x), linestyle="--", color="crimson", alpha=0.5)
+plt.plot(eix_x, np.e**(ordenada) * np.e**(pendent*eix_x), linestyle="--", color="crimson", alpha=0.5, label=etiqueta)
 
-
+plt.legend(loc="best")
 plt.savefig("GraficsP1a/g2.png", dpi=300)
 
 
@@ -141,7 +176,12 @@ fig, ax = graph(x, T, xerr=inc_x, yerr=inc_T, autoSave=False, xname="Distància 
 
 lnT = np.log(T)
 
-coef, cov = np.polyfit(x, lnT, 1, cov=True)
+#regressió
+
+xf=x
+yf=lnT
+
+coef, cov = np.polyfit(xf, yf, 1, cov=True)
 
 pendent = coef[0]
 ordenada = coef[1]
@@ -149,13 +189,25 @@ ordenada = coef[1]
 inc_pendent = np.sqrt(cov[0, 0])
 inc_ordenada = np.sqrt(cov[1, 1])
 
+y_ajust = pendent * xf + ordenada
+ss_res = np.sum((yf - y_ajust) ** 2)
+ss_tot = np.sum((yf - np.mean(yf)) ** 2)
+r2 = 1 - ss_res / ss_tot
+
+etiqueta = "\n".join([
+    "Ajust:",
+    rf"$m = {pendent:.3f} \pm {inc_pendent:.3f}$",
+    rf"$n = {ordenada:.3f} \pm {inc_ordenada:.3f}$",
+    rf"$R^2 = {r2:.4f}$",
+])
+
 print("____Llautó____")
 print(f"Pendent = {pendent:.5f} ± {inc_pendent:.5f}")
 print(f"Ordenada = {ordenada:.3f} ± {inc_ordenada:.3f}\n")
 
 
 eix_x = np.linspace(x[0]-2, x[-1]+2, 1000)
-plt.plot(eix_x, np.e**(ordenada) * np.e**(pendent*eix_x), linestyle="--", color="crimson", alpha=0.5)
+plt.plot(eix_x, np.e**(ordenada) * np.e**(pendent*eix_x), linestyle="--", color="crimson", alpha=0.5, label=etiqueta)
 
-
+plt.legend(loc="best")
 plt.savefig("GraficsP1a/g3.png", dpi=300)

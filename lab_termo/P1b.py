@@ -33,7 +33,7 @@ def graph(x, y, xerr=[], yerr=[], name="prova", xname="eix X", yname="eix Y", ti
     # Eixos
     ax.set_xlabel(xname)
     ax.set_ylabel(yname)
-    ax.set_title(title)
+    # ax.set_title(title)
 
     # Grid principal i secundària
     ax.grid(True, which="major", linestyle="-", alpha=0.3)
@@ -61,11 +61,21 @@ def graph(x, y, xerr=[], yerr=[], name="prova", xname="eix X", yname="eix Y", ti
     
 
 
-def graphReg(x, y, xerr=[], yerr=[], name="prova", xname="eix X", yname="eix Y", title="Gràfica"):
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.ticker import AutoMinorLocator
+
+def graphReg(x, y, xerr=[], yerr=[], name="prova", xname="eix X", yname="eix Y",
+             title="Gràfica", n=None):
+    x = np.asarray(x, dtype=float)
+    y = np.asarray(y, dtype=float)
+
     if len(xerr) == 0:
-            xerr = np.zeros(len(x))
+        xerr = np.zeros(len(x))
     if len(yerr) == 0:
         yerr = np.zeros(len(x))
+    xerr = np.asarray(xerr, dtype=float)
+    yerr = np.asarray(yerr, dtype=float)
 
     fig, ax = plt.subplots()
 
@@ -76,7 +86,8 @@ def graphReg(x, y, xerr=[], yerr=[], name="prova", xname="eix X", yname="eix Y",
         fmt="o",
         color="red",
         ecolor="grey",
-        markersize = 3.5
+        markersize=3.5,
+        label="Dades"
     )
 
     idx = np.argsort(x)
@@ -85,24 +96,44 @@ def graphReg(x, y, xerr=[], yerr=[], name="prova", xname="eix X", yname="eix Y",
     xerr = xerr[idx]
     yerr = yerr[idx]
 
-    coef, cov = np.polyfit(lnT[:10], lnP[:10], 1, cov=True)
+    # Punts usats en l'ajust
+    xf = x[:n] if n is not None else x
+    yf = y[:n] if n is not None else y
 
-    pendent = coef[0]
-    ordenada = coef[1]
+    coef, cov = np.polyfit(xf, yf, 1, cov=True)
+    pendent, ordenada = coef
+    err_pendent, err_ordenada = np.sqrt(np.diag(cov))
+
+    # Coeficient de determinació R²
+    y_ajust = pendent * xf + ordenada
+    ss_res = np.sum((yf - y_ajust) ** 2)
+    ss_tot = np.sum((yf - np.mean(yf)) ** 2)
+    r2 = 1 - ss_res / ss_tot
 
     eps = 0.2
+    etiqueta = (
+        f"Regressió lineal:\n"
+        f"$Pendent = {pendent:.3f} \\pm {err_pendent:.3f}$\n"
+        f"$Ordenada = {ordenada:.3f} \\pm {err_ordenada:.3f}$\n"
+        f"$R^2 = {r2:.4f}$"
+    )
     ax.plot(
-        [x[0]-eps, x[-1]+eps], [pendent*(x[0]-eps)+ordenada, pendent*(x[-1]+eps)+ordenada],
+        [x[0]-eps, x[-1]+eps],
+        [pendent*(x[0]-eps)+ordenada, pendent*(x[-1]+eps)+ordenada],
         linestyle="--",
         color="crimson",
-        alpha=0.2
+        alpha=0.6,
+        label=etiqueta
     )
 
     # Eixos
     ax.set_xlabel(xname)
     ax.set_ylabel(yname)
-    ax.set_title(title)
-    
+    # ax.set_title(title)
+
+    # Llegenda
+    ax.legend(loc="best", fontsize=8, framealpha=0.9)
+
     # Grid principal i secundària
     ax.grid(True, which="major", linestyle="-", alpha=0.3)
     ax.grid(True, which="minor", linestyle=":", alpha=0.2)
@@ -121,9 +152,10 @@ def graphReg(x, y, xerr=[], yerr=[], name="prova", xname="eix X", yname="eix Y",
     )
 
     plt.tight_layout()
-    # plt.axis("equal")
     plt.savefig(f"GraficsP1b/{name}.png", dpi=300)
     plt.show()
+
+    return pendent, err_pendent, ordenada, err_ordenada, r2
 
 import numpy as np
 
@@ -164,58 +196,74 @@ ordenada = coef[1]
 inc_pendent = np.sqrt(cov[0, 0])
 inc_ordenada = np.sqrt(cov[1, 1])
 
+# Coeficient de determinació R²
+y_ajust = pendent * lnT[11:] + ordenada
+ss_res = np.sum((lnRad[11:] - y_ajust) ** 2)
+ss_tot = np.sum((lnRad[11:] - np.mean(lnRad[11:])) ** 2)
+r2 = 1 - ss_res / ss_tot
+
+print("___Q7___")
 print(f"Pendent = {pendent:.3f} ± {inc_pendent:.3f}")
 print(f"Ordenada = {ordenada:.3f} ± {inc_ordenada:.3f}\n")
 
+etiqueta = "\n".join([
+    "Ajust:",
+    rf"$\mathrm{{Exponent}} = {pendent:.3f} \pm {inc_pendent:.3f}$",
+    rf"$e\sigma A = {ordenada:.2f} \pm {inc_ordenada:.2f}$",
+    rf"$R^2 = {r2:.4f}$",
+])
 
 eix_x = np.linspace(int(T[11]-50), int(T[-1]+50), 1000)
-plt.plot(eix_x, eix_x**pendent * np.e**ordenada, color="crimson", linestyle="--", alpha=0.5)
+plt.plot(eix_x, eix_x**pendent * np.e**ordenada, color="crimson", linestyle="--", alpha=0.5, label=etiqueta)
+
+plt.legend(loc="best")
 
 plt.savefig(f"GraficsP1b/Q7b.png", dpi=300)
 
 
 graph(lnT, lnRad, line=True, name="Q8", xname=r"$\ln (T)$", yname=r"$\ln (P)$", title=r"$\ln (P)$ en funció de $\ln(T)$")
 
-# #Q 2-5
+#Q 2-5
 
-# lnP = np.log(P)
+lnP = np.log(P)
 
-# lnT = np.log(T-T_ambient)
+lnT = np.log(T-T_ambient)
 
-# inc_lnP = inc_P/P
+inc_lnP = inc_P/P
 
-# inc_lnT = (inc_T + 0.1)/(T-T_ambient)
+inc_lnT = (inc_T + 0.1)/(T-T_ambient)
 
 
-# graph(lnT, lnP, xerr=inc_lnT, yerr=inc_lnP, name="Q4", xname=r"$\ln(\Delta T)$", yname=r"$\ln(P)$", title=r"$\ln(P)$ en funció de $\ln(\Delta T)$, amb $\Delta T = T-T_a$")
+graph(lnT, lnP, xerr=inc_lnT, yerr=inc_lnP, name="Q4", xname=r"$\ln(\Delta T)$", yname=r"$\ln(P)$", title=r"$\ln(P)$ en funció de $\ln(\Delta T)$, amb $\Delta T = T-T_a$")
 
-# idx = np.argsort(T)
-# lnT = lnT[idx]
-# lnP = lnP[idx]
+idx = np.argsort(T)
+lnT = lnT[idx]
+lnP = lnP[idx]
 
-# for i in range(len(lnP)-3):
-#     coef, cov = np.polyfit(lnT[:-i-1], lnP[:-i-1], 1, cov=True)
+for i in range(len(lnP)-3):
+    coef, cov = np.polyfit(lnT[:-i-1], lnP[:-i-1], 1, cov=True)
 
-#     pendent = coef[0]
-#     ordenada = coef[1]
+    pendent = coef[0]
+    ordenada = coef[1]
 
-#     inc_pendent = np.sqrt(cov[0, 0])
-#     inc_ordenada = np.sqrt(cov[1, 1])
+    inc_pendent = np.sqrt(cov[0, 0])
+    inc_ordenada = np.sqrt(cov[1, 1])
 
-#     # print(f"Agafant desde n={i}:")
-#     # print(f"Pendent = {pendent:.3f} ± {inc_pendent:.3f}")
-#     # print(f"Ordenada = {ordenada:.3f} ± {inc_ordenada:.3f}\n")
+    # print(f"Agafant desde n={i}:")
+    # print(f"Pendent = {pendent:.3f} ± {inc_pendent:.3f}")
+    # print(f"Ordenada = {ordenada:.3f} ± {inc_ordenada:.3f}\n")
 
-# coef, cov = np.polyfit(lnT[:10], lnP[:10], 1, cov=True)
+coef, cov = np.polyfit(lnT[:10], lnP[:10], 1, cov=True)
 
-# pendent = coef[0]
-# ordenada = coef[1]
+pendent = coef[0]
+ordenada = coef[1]
 
-# inc_pendent = np.sqrt(cov[0, 0])
-# inc_ordenada = np.sqrt(cov[1, 1])
+inc_pendent = np.sqrt(cov[0, 0])
+inc_ordenada = np.sqrt(cov[1, 1])
 
-# print(f"Pendent = {pendent:.3f} ± {inc_pendent:.3f}")
-# print(f"Ordenada = {ordenada:.3f} ± {inc_ordenada:.3f}\n")
+print("___Q5___")
+print(f"Pendent = {pendent:.3f} ± {inc_pendent:.3f}")
+print(f"Ordenada = {ordenada:.3f} ± {inc_ordenada:.3f}\n")
 
-# graphReg(lnT[:10], lnP[:10], xerr=inc_lnT[idx][:10], yerr=inc_lnP[idx][:10], name="Q5", xname=r"$\ln(\Delta T)$", yname=r"$\ln(P)$", title=r"$\ln(P)$ en funció de $\ln(\Delta T)$, regressió lineal (10 primers punts)")
+graphReg(lnT[:10], lnP[:10], xerr=inc_lnT[idx][:10], yerr=inc_lnP[idx][:10], name="Q5", xname=r"$\ln(\Delta T)$", yname=r"$\ln(P)$", title=r"$\ln(P)$ en funció de $\ln(\Delta T)$, regressió lineal (10 primers punts)")
 
