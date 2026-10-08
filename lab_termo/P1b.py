@@ -1,7 +1,12 @@
 
 
+def coma(x, fmt=".3g"):
+    return format(x, fmt).replace(".", ",")
+
 import matplotlib.pyplot as plt
 from matplotlib.ticker import AutoMinorLocator
+from matplotlib.ticker import FuncFormatter
+
 
 def graph(x, y, xerr=[], yerr=[], name="prova", xname="eix X", yname="eix Y", title="Gràfica", autoSave=True, line=False):
 
@@ -42,6 +47,10 @@ def graph(x, y, xerr=[], yerr=[], name="prova", xname="eix X", yname="eix Y", ti
     # Subticks
     ax.xaxis.set_minor_locator(AutoMinorLocator(2))
     ax.yaxis.set_minor_locator(AutoMinorLocator(2))
+
+    fmt = FuncFormatter(lambda x, _: f"{x:g}".replace('.', ','))
+    ax.xaxis.set_major_formatter(fmt)
+    ax.yaxis.set_major_formatter(fmt)
 
     # Eixos als quatre costats
     ax.tick_params(
@@ -113,9 +122,9 @@ def graphReg(x, y, xerr=[], yerr=[], name="prova", xname="eix X", yname="eix Y",
     eps = 0.2
     etiqueta = (
         f"Regressió lineal:\n"
-        f"$Pendent = {pendent:.3f} \\pm {err_pendent:.3f}$\n"
-        f"$Ordenada = {ordenada:.3f} \\pm {err_ordenada:.3f}$\n"
-        f"$R^2 = {r2:.4f}$"
+        f"$Pendent = {coma(pendent, '.3f')} \\pm {coma(err_pendent, '.3f')}$\n"
+        f"$Ordenada = {coma(ordenada, '.3f')} \\pm {coma(err_ordenada, '.3f')}$\n"
+        f"$R^2 = {coma(r2, ".4f")}$"
     )
     ax.plot(
         [x[0]-eps, x[-1]+eps],
@@ -141,6 +150,10 @@ def graphReg(x, y, xerr=[], yerr=[], name="prova", xname="eix X", yname="eix Y",
     # Subticks
     ax.xaxis.set_minor_locator(AutoMinorLocator(2))
     ax.yaxis.set_minor_locator(AutoMinorLocator(2))
+
+    fmt = FuncFormatter(lambda x, _: f"{x:g}".replace('.', ','))
+    ax.xaxis.set_major_formatter(fmt)
+    ax.yaxis.set_major_formatter(fmt)
 
     # Eixos als quatre costats
     ax.tick_params(
@@ -180,6 +193,50 @@ T_ambient = 27.3+273.15
 
 #Q7
 
+fig, ax = graph(T, Rad, xerr=inc_T, yerr=inc_Rad, xname=r"Temperatura, $T(K)$", yname=r"Radiació emesa, $P(\mu W$)", title="Regressió de la radiació emesa en funció de la temperatura\n(Sense els 12 primers punts)", autoSave=False)
+
+
+lnRad = np.log(Rad)
+
+lnT   = np.log(T)
+
+
+coef, cov = np.polyfit(lnT, lnRad, 1, cov=True)
+
+pendent = coef[0]
+ordenada = coef[1]
+
+inc_pendent = np.sqrt(cov[0, 0])
+inc_ordenada = np.sqrt(cov[1, 1])
+
+# Coeficient de determinació R²
+y_ajust = pendent * lnT + ordenada
+ss_res = np.sum((lnRad - y_ajust) ** 2)
+ss_tot = np.sum((lnRad - np.mean(lnRad)) ** 2)
+r2 = 1 - ss_res / ss_tot
+
+print("___Q7___")
+print(f"Pendent = {pendent:.3f} ± {inc_pendent:.3f}")
+print(f"Ordenada = {ordenada:.3f} ± {inc_ordenada:.3f}\n")
+
+def coma_math(x, fmt=".3f"):
+    # per usar dins de $...$: la coma entre claus evita l'espai
+    return format(x, fmt).replace(".", "{,}")
+
+etiqueta = "\n".join([
+    "Ajust:",
+    rf"$\mathrm{{Exponent}} = {coma_math(pendent)} \pm {coma_math(inc_pendent)}$",
+    rf"$\ln(e\sigma A) = {coma_math(ordenada)} \pm {coma_math(inc_ordenada)}$",
+    rf"$R^2 = {coma_math(r2, '.4f')}$",
+])
+
+eix_x = np.linspace(int(T[0]-50), int(T[-1]+50), 1000)
+plt.plot(eix_x, eix_x**pendent * np.e**ordenada, color="crimson", linestyle="--", alpha=0.5, label=etiqueta)
+
+plt.legend(loc="best")
+
+plt.savefig(f"GraficsP1b/Q7a.png", dpi=300)
+
 fig, ax = graph(T[11:], Rad[11:], xerr=inc_T[11:], yerr=inc_Rad[11:], xname=r"Temperatura, $T(K)$", yname=r"Radiació emesa, $P(\mu W$)", title="Regressió de la radiació emesa en funció de la temperatura\n(Sense els 12 primers punts)", autoSave=False)
 
 
@@ -208,9 +265,9 @@ print(f"Ordenada = {ordenada:.3f} ± {inc_ordenada:.3f}\n")
 
 etiqueta = "\n".join([
     "Ajust:",
-    rf"$\mathrm{{Exponent}} = {pendent:.3f} \pm {inc_pendent:.3f}$",
-    rf"$e\sigma A = {ordenada:.2f} \pm {inc_ordenada:.2f}$",
-    rf"$R^2 = {r2:.4f}$",
+    rf"$\mathrm{{Exponent}} = {coma_math(pendent)} \pm {coma_math(inc_pendent)}$",
+    rf"$\ln(e\sigma A) = {coma_math(ordenada)} \pm {coma_math(inc_ordenada)}$",
+    rf"$R^2 = {coma_math(r2, '.4f')}$",
 ])
 
 eix_x = np.linspace(int(T[11]-50), int(T[-1]+50), 1000)
