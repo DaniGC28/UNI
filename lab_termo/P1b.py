@@ -226,7 +226,7 @@ def coma_math(x, fmt=".3f"):
 etiqueta = "\n".join([
     "Ajust:",
     rf"$\mathrm{{Exponent}} = {coma_math(pendent)} \pm {coma_math(inc_pendent)}$",
-    rf"$\ln(e\sigma A) = {coma_math(ordenada)} \pm {coma_math(inc_ordenada)}$",
+    rf"$\ln(e\sigma A) = {coma_math(ordenada, ".2f")} \pm {coma_math(inc_ordenada, ".2f")}$",
     rf"$R^2 = {coma_math(r2, '.4f')}$",
 ])
 
@@ -266,7 +266,7 @@ print(f"Ordenada = {ordenada:.3f} ± {inc_ordenada:.3f}\n")
 etiqueta = "\n".join([
     "Ajust:",
     rf"$\mathrm{{Exponent}} = {coma_math(pendent)} \pm {coma_math(inc_pendent)}$",
-    rf"$\ln(e\sigma A) = {coma_math(ordenada)} \pm {coma_math(inc_ordenada)}$",
+    rf"$\ln(e\sigma A) = {coma_math(ordenada, ".2f")} \pm {coma_math(inc_ordenada, ".2f")}$",
     rf"$R^2 = {coma_math(r2, '.4f')}$",
 ])
 
