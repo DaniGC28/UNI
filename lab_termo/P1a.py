@@ -532,15 +532,106 @@ plt.legend(loc="best")
 
 plt.savefig("GraficsP1a/1PerP.png", dpi=300)
 
+### Periodes ###
+
+periodes = []
+inc_periodes = []
+bigPics = []
+for dataset in [Tg0, Tg10, Tg15, Tp0, Tp10, Tp20]:
+    mitjana = np.mean(dataset)
+    pics = []
+    n0 = 0
+    intop = False
+    for j in range(len(dataset)):
+        if dataset[j]-mitjana > 0:
+            if intop:
+                continue
+            n0 = j
+            intop = True
+        else:
+            if not intop:
+                continue
+            i = n0 + np.argmax(dataset[n0:j])
+            pics.append(t[i])
+            intop = False
+            print(pics[-1])
+    p = []
+    for j in range(len(pics)):
+        if j != 0:
+            p.append(pics[j] - pics[j-1])
+
+    bigPics.append(pics)
+    periodes.append(np.mean(p))
+    inc_periodes.append(np.std(p, ddof=1)/np.sqrt(len(p)))
+
+desfasatgeTg10 = []
+desfasatgeTg15 = []
+desfasatgeTp10 = []
+desfasatgeTp20 = []
+for i in range(len(bigPics[0])):
+    desfasatgeTg10.append(bigPics[1][i]-bigPics[0][i])
+    desfasatgeTg15.append(bigPics[2][i]-bigPics[0][i])
+    desfasatgeTp10.append(bigPics[4][i]-bigPics[3][i])
+    desfasatgeTp20.append(bigPics[5][i]-bigPics[3][i])
+
+inc_desfasatgeTg10 = np.std(desfasatgeTg10, ddof=1)/np.sqrt(7)
+inc_desfasatgeTg15 = np.std(desfasatgeTg15, ddof=1)/np.sqrt(7)
+inc_desfasatgeTp10 = np.std(desfasatgeTp10, ddof=1)/np.sqrt(7)
+inc_desfasatgeTp20 = np.std(desfasatgeTp20, ddof=1)/np.sqrt(7)
+
+desfasatgeTg10 = np.mean(desfasatgeTg10)
+desfasatgeTg15 = np.mean(desfasatgeTg15)
+desfasatgeTp10 = np.mean(desfasatgeTp10)
+desfasatgeTp20 = np.mean(desfasatgeTp20)
+
+
+### print 1 i 2 ###
 
 print(f"""
 Barra gran (0, 10 i 15 cm):
 T_mitjanes = {mitjana_Tg0}, {mitjana_Tg10}, {mitjana_Tg15}
 Amplituds  = {max(Tg0)-min(Tg0)}, {max(Tg10)-min(Tg10)}, {max(Tg15)-min(Tg15)}
-Desfasatge = 0, {pic_Tg10-pic_Tg0}, {pic_Tg15-pic_Tg0}
+Desfasatge = 0, {desfasatgeTg10} +- {inc_desfasatgeTg10}, {desfasatgeTg15} +- {inc_desfasatgeTg15}
+Periodes   = {periodes[0]} +- {inc_periodes[0]}, {periodes[1]} +- {inc_periodes[1]}, {periodes[2]} +- {inc_periodes[2]}
 
 Barra gran (0, 10 i 20 cm):
 T_mitjanes = {mitjana_Tp0}, {mitjana_Tp10}, {mitjana_Tp20}
 Amplituds  = {max(Tp0)-min(Tp0)}, {max(Tp10)-min(Tp10)}, {max(Tp20)-min(Tp20)}
-Desfasatge = 0, {pic_Tp10-pic_Tp0}, {pic_Tp20-pic_Tp0}
+Desfasatge = 0, {desfasatgeTp10} +- {inc_desfasatgeTp10}, {desfasatgeTp20} +- {inc_desfasatgeTp20}
+Periodes   = {periodes[3]} +- {inc_periodes[3]}, {periodes[4]} +- {inc_periodes[4]}, {periodes[5]} +- {inc_periodes[5]}
 """)
+
+
+### 3 ###
+
+amplitud_Tg0 = max(Tg0)-min(Tg0)
+amplitud_Tg10 = max(Tg10)-min(Tg10)
+amplitud_Tg15 = max(Tg15)-min(Tg15)
+amplitud_Tp0 = max(Tp0)-min(Tp0)
+amplitud_Tp10 = max(Tp10)-min(Tp10)
+amplitud_Tp20 = max(Tp20)-min(Tp20)
+
+mg1 = np.log(amplitud_Tg0/amplitud_Tg10)/(10)
+mg2 = np.log(amplitud_Tg10/amplitud_Tg15)/(5)
+mg3 = np.log(amplitud_Tg15/amplitud_Tg0)/(-15)
+
+mp1 = np.log(amplitud_Tp0/amplitud_Tp10)/(10)
+mp2 = np.log(amplitud_Tp10/amplitud_Tp20)/(10)
+mp3 = np.log(amplitud_Tp20/amplitud_Tp0)/(-20)
+
+print("m per a la barra gran (ultim mitjana): ", mg1, mg2, mg3, np.mean([mg1, mg2, mg3]))
+print("m per a la barra petita (ultim mitjana):", mp1, mp2, mp3, np.mean([mp1, mp2, mp3])), "\n"
+
+
+### 4 ###
+
+hg1 = desfasatgeTg10/10
+hg2 = desfasatgeTg15/15
+hg3 = (desfasatgeTg15-desfasatgeTg10)/5
+
+hp1 = desfasatgeTp10/10
+hp2 = desfasatgeTp20/20
+hp3 = (desfasatgeTp20-desfasatgeTp10)/10
+
+print("h per a la barra gran (ultim mitjana): ", hg1, hg2, hg3, np.mean([hg1, hg2, hg3]))
+print("h per a la barra petita (ultim mitjana):", hp1, hp2, hp3, np.mean([hp1, hp2, hp3])), "\n"
