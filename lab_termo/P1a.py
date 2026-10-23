@@ -474,7 +474,7 @@ Tp20= -Ta+1/1000000*np.array([68471901, 68577583, 68599648, 68622063, 68773170, 
 
 fig, ax = graph(t, Tp0, yerr=incT, autoSave=False, label="0cm", size=2)
 fig, ax = graph(t, Tp10, yerr=incT, autoSave=False, ax=ax, color="blue", label="10cm", size=2)
-fig, ax = graph(t, Tp20, yerr=incT, autoSave=False, ax=ax, color="green", label="15cm", size=2, xname="temps (s)", yname=r"$T - T{\text{ambient}}$ (ºC)")
+fig, ax = graph(t, Tp20, yerr=incT, autoSave=False, ax=ax, color="green", label="20cm", size=2, xname="temps (s)", yname=r"$T - T{\text{ambient}}$ (ºC)")
 
 mitjana_Tp0 = np.mean(Tp0)
 mitjana_Tp10 = np.mean(Tp10)
@@ -490,14 +490,14 @@ plt.savefig("GraficsP1a/Tp.png", dpi=300)
 
 fig, ax = graph([0, 10, 15], [mitjana_Tg0, mitjana_Tg10, mitjana_Tg15], xerr=np.zeros(3)+1, 
                 yerr=[0.5, 0.5, 0.5],
-                autoSave=False, color="red")
+                autoSave=False, color="red", label="Barra gran")
 
 fig, ax = graph([0, 10, 20], [mitjana_Tp0, mitjana_Tp10, mitjana_Tp20], xerr=np.zeros(3)+1, 
                 yerr=[0.5, 0.5, 0.5], xname="Distància (cm)", yname=r"$T - T_{\text{ambient}}$ (ºC)", 
-                autoSave=False, color="blue", ax=ax)
+                autoSave=False, color="blue", ax=ax, label="Barra petita")
 
 
-
+plt.legend(loc="best")
 plt.savefig("GraficsP1a/Tmitjana.png", dpi=300)
 
 ### Desfasatge ###
@@ -594,7 +594,7 @@ Amplituds  = {max(Tg0)-min(Tg0)}, {max(Tg10)-min(Tg10)}, {max(Tg15)-min(Tg15)}
 Desfasatge = 0, {desfasatgeTg10} +- {inc_desfasatgeTg10}, {desfasatgeTg15} +- {inc_desfasatgeTg15}
 Periodes   = {periodes[0]} +- {inc_periodes[0]}, {periodes[1]} +- {inc_periodes[1]}, {periodes[2]} +- {inc_periodes[2]}
 
-Barra gran (0, 10 i 20 cm):
+Barra petita (0, 10 i 20 cm):
 T_mitjanes = {mitjana_Tp0}, {mitjana_Tp10}, {mitjana_Tp20}
 Amplituds  = {max(Tp0)-min(Tp0)}, {max(Tp10)-min(Tp10)}, {max(Tp20)-min(Tp20)}
 Desfasatge = 0, {desfasatgeTp10} +- {inc_desfasatgeTp10}, {desfasatgeTp20} +- {inc_desfasatgeTp20}
