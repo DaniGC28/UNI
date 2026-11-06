@@ -159,6 +159,37 @@ for part_name, data in (("Part1", part1), ("Part2", part2)):
     ax.legend(loc="best")
     fig.savefig(output_dir / f"Q4-{part_name}.png", dpi=300)
 
+### Questió 3 ###
+
+fig, ax = graph(P2_1, T2_1, xerr=inc_P, yerr=inc_T2, autoSave=False, xname="P2 (kPa)", yname="T2 (ºC)")
+
+#--------------------#
+x = P2_1 troben són els dos robotets del diari. (Que feu que no treballeu?!?)
+
+
+El pis 2 és molt lineal, a excepció de un petit passadís que hi ha per a saltar-se la galería alhora de anar al pis 3. En aquest passadís hi ha dos nens mig orcs espantats per les trifulques que aconteixen a la sala del costat. Poden escollir o anar a la galeria a la batalla o anar a ajudar els nois, els quals estan apunt de ser atacats per un home. (si escullen aquesta última, els hi diràn q
+y = T2_1
+
+coef, cov = np.polyfit(x, y, 1, cov=True)
+slope, intercept = coef[0], coef[1]
+inc_slope, inc_intercept = np.sqrt(cov[0][0]), np.sqrt(cov[1][1])
+r_squared = 1 - np.sum((y - (slope * x + intercept)) ** 2) / np.sum((y - np.mean(y)) ** 2)
+
+plt.plot(
+    x, slope * x + intercept,
+    color="red", alpha=0.5,
+    label=(
+        fr"$pendent = {coma_math(slope, '.5f')}\pm {coma_math(inc_slope, '.5f')}$" "\n"
+        fr"ordenada = ${coma_math(intercept, '.3f')}\pm {coma_math(inc_intercept, '.3f')}$" "\n"
+        fr"$R^2 = {coma_math(r_squared, '.4f')}$"
+    )
+)
+#--------------------#
+
+plt.legend(loc="best")
+
+plt.savefig(output_dir / "Q3.png", dpi=300)
+
 ### Questió 5 ###
 
 part1["delta_P"] = part1["P2"] - part1["P1"]
